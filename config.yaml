@@ -1,7 +1,7 @@
 baseurl: /
 languageCode: en-us
-title: A Hugo website
-theme: hugo-lithium
+title: "RT Blog"
+theme: "hugo-theme-stack"
 googleAnalytics: ''
 disqusShortname: ''
 ignoreFiles:
@@ -14,12 +14,12 @@ permalinks:
   post: /:year/:month/:day/:slug/
 menu:
   main:
+    - name: Home
+      url: /
+      weight: 1
     - name: About
       url: /about/
-    - name: GitHub
-      url: https://github.com/rstudio/blogdown
-    - name: Twitter
-      url: https://twitter.com/rstudio
+      weight: 2
 params:
   MathJaxCDN: //cdnjs.cloudflare.com/ajax/libs
   MathJaxVersion: 2.7.5

@@ -1,0 +1,67 @@
+---
+title: One way ANOVA
+author: RT
+date: '2021-02-03'
+slug: one-way-anova
+categories: []
+tags:
+  - ANOVA
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<pre class="r"><code>rm(list = ls())
+library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## √ ggplot2 3.3.2     √ purrr   0.3.4
+## √ tibble  3.0.4     √ dplyr   1.0.2
+## √ tidyr   1.1.2     √ stringr 1.4.0
+## √ readr   1.4.0     √ forcats 0.5.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>set.seed(20210203)
+
+samplesize_a &lt;- 75
+samplesize_b &lt;- 75
+
+real_mean_a &lt;- 0
+real_mean_b &lt;- 2
+
+real_sd_a &lt;- 1
+real_sd_b &lt;- 1
+
+data_a &lt;- rnorm(samplesize_a, real_mean_a, real_sd_a)
+data_b &lt;- rnorm(samplesize_b, real_mean_b, real_sd_b)
+
+data_full &lt;- c(data_a, data_b)
+data_label &lt;- c(rep(&quot;a&quot;,samplesize_a), rep(&quot;b&quot;,samplesize_b))
+
+ggplot()+
+  geom_density(aes(x = data_full, after_stat(count),
+                   color = data_label))+
+  geom_density(aes(x = data_full, after_stat(count)))+
+  theme_minimal()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>组内均方</p>
+<pre class="r"><code>sample_mean_full &lt;- mean(data_full)
+sample_mean_a &lt;- mean(data_full[data_label==&quot;a&quot;])
+sample_mean_b &lt;- mean(data_full[data_label==&quot;b&quot;])
+
+# between-groups sum of squares
+sample_ss_between &lt;- samplesize_a*(sample_mean_a-sample_mean_full)^2+
+  samplesize_b*(sample_mean_b-sample_mean_full)^2
+sample_mean_ss_between &lt;- sample_ss_between/(2-1)
+
+# within-group sum of squares
+sample_ss_within &lt;- 0
+for (i in 1:samplesize_a){
+  sample_ss_within &lt;- sample_ss_within + (data_a[i]-sample_mean_a)^2
+}
+for (i in 1:samplesize_b){
+  sample_ss_within &lt;- sample_ss_within + (data_b[i]-sample_mean_b)^2
+}
+sample_mean_ss_within &lt;- sample_ss_between/(samplesize_a+samplesize_b-1)
+
+F_stat &lt;- sample_mean_ss_between/sample_mean_ss_within</code></pre>

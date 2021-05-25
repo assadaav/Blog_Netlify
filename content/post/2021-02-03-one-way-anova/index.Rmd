@@ -1,0 +1,66 @@
+---
+title: One way ANOVA
+author: RT
+date: '2021-02-03'
+slug: one-way-anova
+categories: []
+tags:
+  - ANOVA
+---
+
+```{r}
+rm(list = ls())
+library(tidyverse)
+
+set.seed(20210203)
+
+samplesize_a <- 75
+samplesize_b <- 75
+
+real_mean_a <- 0
+real_mean_b <- 2
+
+real_sd_a <- 1
+real_sd_b <- 1
+
+data_a <- rnorm(samplesize_a, real_mean_a, real_sd_a)
+data_b <- rnorm(samplesize_b, real_mean_b, real_sd_b)
+
+data_full <- c(data_a, data_b)
+data_label <- c(rep("a",samplesize_a), rep("b",samplesize_b))
+
+ggplot()+
+  geom_density(aes(x = data_full, after_stat(count),
+                   color = data_label))+
+  geom_density(aes(x = data_full, after_stat(count)))+
+  theme_minimal()
+
+```
+
+组内均方
+
+```{r}
+sample_mean_full <- mean(data_full)
+sample_mean_a <- mean(data_full[data_label=="a"])
+sample_mean_b <- mean(data_full[data_label=="b"])
+
+# between-groups sum of squares
+sample_ss_between <- samplesize_a*(sample_mean_a-sample_mean_full)^2+
+  samplesize_b*(sample_mean_b-sample_mean_full)^2
+sample_mean_ss_between <- sample_ss_between/(2-1)
+
+# within-group sum of squares
+sample_ss_within <- 0
+for (i in 1:samplesize_a){
+  sample_ss_within <- sample_ss_within + (data_a[i]-sample_mean_a)^2
+}
+for (i in 1:samplesize_b){
+  sample_ss_within <- sample_ss_within + (data_b[i]-sample_mean_b)^2
+}
+sample_mean_ss_within <- sample_ss_between/(samplesize_a+samplesize_b-1)
+
+F_stat <- sample_mean_ss_between/sample_mean_ss_within
+
+
+```
+
